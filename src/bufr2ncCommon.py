@@ -52,3 +52,46 @@ DTYPE_UINT    = 4   # for dimension coordinates
 DTYPE_DOUBLE  = 5   # temporary: for strings that are expected to be double
                     #            in downstream flows (GSI)
 
+###########################################################################
+# VARIABLE NAMES
+###########################################################################
+# Want these to follow the netcdf CF naming convention. Some names don't
+# exist, so create some reasonable names. Call these the 'NC' naming
+# convention.
+
+# Locations
+NC_LAT_NAME  = 'latitude'
+NC_LON_NAME  = 'longitude'
+NC_TIME_NAME = 'time'
+
+# Atmospheric fields
+NC_T_NAME  = 'air_temperature'
+NC_Q_NAME  = 'specific_humidity'
+NC_U_NAME  = 'eastward_wind'
+NC_V_NAME  = 'northward_wind'
+NC_P_NAME  = 'air_pressure'
+NC_PW_NAME = 'precipitable_water'
+NC_TD_NAME = 'dew_point_temperature'
+NC_Z_NAME  = 'height'
+
+# Radiance quantities
+NC_TB_NAME   = 'brightness_temperature'
+NC_CNUM_NAME = 'channel_number'
+NC_SAZA_NAME = 'sensor_zenith_angle'
+NC_SAAA_NAME = 'sensor_azimuth_angle'
+NC_SOZA_NAME = 'solar_zenith_angle'
+NC_SOAA_NAME = 'solar_azimuth_angle'
+
+# RO quantities
+NC_AR_NAME   = 'atmospheric_refractivity'
+NC_BA_NAME   = 'bending_angle'
+NC_MF_NAME   = 'mean_frequency'
+NC_IP_NAME   = 'impact_parameter'
+NC_PNUM_NAME = 'profile_number'
+
+# Extras
+NC_DATE_STAMP_NAME = 'obs_date_stamp'  # Date stamp format: integer, YYYYMMDD
+NC_TIME_STAMP_NAME = 'obs_time_stamp'  # Time stamp format: integer, HHMMSS
+
+# Metadata
+NC_STATION_ID_NAME = 'station_id'
