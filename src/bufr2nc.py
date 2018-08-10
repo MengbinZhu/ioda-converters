@@ -152,74 +152,60 @@ def ConvertMessagesToTables(BufrFname, NetcdfFname, Obs, MaxNumMsg, ThinInterval
     MdataNames = sorted(list(MdataSet))
     VarNames   = sorted(list(VarSet))
     
-    # Read through the dictionary and create a "table" for writing into the
-    # netcdf file.
-    print("DEBUG: RecNames: ", RecNames, len(RecNames))
-    print("DEBUG: MdataNames: ", MdataNames, len(MdataNames))
-    print("DEBUG: VarNames: ", VarNames, len(VarNames))
-    print("DEBUG:")
-    print("DEBUG: ObsDict: ")
-
-    LocNum = 0
-    ObsNum = 0
-
-    Rnum   = [ ]
-    Vnum   = [ ]
-    Vindex = [ ]
-    Lnum   = [ ]
-    Onum   = [ ]
-    Lon    = [ ]
-    Lat    = [ ]
-    Lon    = [ ]
-    Dstamp = [ ]
-    Tstamp = [ ]
-    Time   = [ ]
-    Press  = [ ]
-    ObsVal = [ ]
-    ObsErr = [ ]
-    ObsQc  = [ ]
+    # Write the data out into the netcdf file. Use groups to organize the data
+    # in the file according to records, metadata and variables.
 
     for irec in range(len(RecNames)):
         RecNum = irec + 1
         RecKey = RecNames[irec]
+        RecName = "Rec_" + "{0:d}".format(RecNum)
+
+        Rgroup = Nfid.createGroup(RecName)
 
         MdataDict = ObsDict[RecKey]['METADATA']
         VarDict   = ObsDict[RecKey]['VARIABLES']
 
         for imdata in range(len(MdataNames)):
             MdataKey = MdataNames[imdata]
-            print("DEBUG:   METADATA: ", MdataKey, MdataDict[MdataKey])
+            MdataVal = MdataDict[MdataKey]
+
+            Rgroup.setncattr(MdataKey, MdataVal)
 
         for ivar in range(len(VarNames)):
             VarNum = ivar + 1
             VarKey = VarNames[ivar]
 
-            ValNum = 1
-            for i in range(len(VarDict[VarKey][VarKey])):
-                LocNum += 1
-                ObsNum += 1
+            VarGroup = Rgroup.createGroup(VarKey)
 
-                Rnum.append(RecNum)
-                Vnum.append(VarNum)
-                Vindex.append(ValNum)
-                Lnum.append(LocNum)
-                Onum.append(ObsNum)
-                Lat.append(VarDict[VarKey][cm.NC_LAT_NAME][i])
-                Lon.append(VarDict[VarKey][cm.NC_LON_NAME][i])
-                Dstamp.append(VarDict[VarKey][cm.NC_DATE_STAMP_NAME][i])
-                Tstamp.append(VarDict[VarKey][cm.NC_TIME_STAMP_NAME][i])
-                Time.append(VarDict[VarKey][cm.NC_TIME_NAME][i])
-                Press.append(VarDict[VarKey][cm.NC_P_NAME][i])
-                ObsVal.append(VarDict[VarKey][VarKey][i])
-                ObsErr.append(VarDict[VarKey][VarKey+'_err'][i])
-                ObsQc.append(VarDict[VarKey][VarKey+'_qc'][i])
+            Nvals = len(VarDict[VarKey][VarKey])
+            VarGroup.createDimension("nvals", Nvals)
 
+            NcVar = VarGroup.createVariable(cm.NC_LAT_NAME, "f4", ("nvals"))
+            NcVar[:] = VarDict[VarKey][cm.NC_LAT_NAME]
 
-    print("DEBUG: Rnum: ", len(Rnum))
-    for i in range(ObsNum):
-        print("DEBUG: ", Rnum[i], Vnum[i], Vindex[i], Lnum[i], Onum[i], Lat[i], Lon[i], Dstamp[i], Tstamp[i], Time[i], Press[i], ObsVal[i], ObsErr[i], ObsQc[i])
+            NcVar = VarGroup.createVariable(cm.NC_LON_NAME, "f4", ("nvals"))
+            NcVar[:] = VarDict[VarKey][cm.NC_LON_NAME]
 
+            NcVar = VarGroup.createVariable(cm.NC_DATE_STAMP_NAME, "i4", ("nvals"))
+            NcVar[:] = VarDict[VarKey][cm.NC_DATE_STAMP_NAME]
 
+            NcVar = VarGroup.createVariable(cm.NC_TIME_STAMP_NAME, "i4", ("nvals"))
+            NcVar[:] = VarDict[VarKey][cm.NC_TIME_STAMP_NAME]
+
+            NcVar = VarGroup.createVariable(cm.NC_TIME_NAME, "f8", ("nvals"))
+            NcVar[:] = VarDict[VarKey][cm.NC_TIME_NAME]
+
+            NcVar = VarGroup.createVariable(cm.NC_P_NAME, "f4", ("nvals"))
+            NcVar[:] = VarDict[VarKey][cm.NC_P_NAME]
+
+            NcVar = VarGroup.createVariable(VarKey, "f4", ("nvals"))
+            NcVar[:] = VarDict[VarKey][VarKey]
+
+            NcVar = VarGroup.createVariable(VarKey+'_err', "f4", ("nvals"))
+            NcVar[:] = VarDict[VarKey][VarKey+'_err']
+
+            NcVar = VarGroup.createVariable(VarKey+'_qc', "f4", ("nvals"))
+            NcVar[:] = VarDict[VarKey][VarKey+'_qc']
 
 
     # Finish up
